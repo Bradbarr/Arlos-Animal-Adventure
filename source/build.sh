@@ -19,8 +19,10 @@ wc -c index.html web/index.html
 mkdir -p axl/web
 python3 - <<'PY'
 import re, shutil, os
+ED = open('src/edition-axl.js').read()
 def axl(t):
     t = t.replace('Arlo', 'Axl').replace('ARLO', 'AXL').replace('arlo', 'axl')
+    if '</script>\n</body>' in t: t = t.replace('</script>\n</body>', ED.replace('drawArlo', 'drawAxl') + '\n</script>\n</body>', 1)
     return t
 for src, dst in [('index.html', 'axl/index.html'), ('web/index.html', 'axl/web/index.html'), ('web/manifest.webmanifest', 'axl/web/manifest.webmanifest'), ('web/sw.js', 'axl/web/sw.js')]:
     open(dst, 'w').write(axl(open(src).read()))
