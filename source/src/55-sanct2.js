@@ -52,7 +52,7 @@ Object.assign(Sanct, {
   zoom(d) { window.ZOOMD = clamp((window.ZOOMD || 0) + d, -2, 2); resize(); this.hotK = ''; CAM.x = clamp(this.a.x - VW / 2, 0, this.N * TS - VW); CAM.y = clamp(this.a.y - VH / 2, 0, this.N * TS - VH); SFX.click(); },
   tileCol(i) { const gg = this.gnd[i], o = this.obj[i]; if (o === O.FENCE || o === O.GATE) return '#7a4f2a'; if (SOLID.has(o) && o !== O.STORE) return shade(GCOL[gg], -.25); return GCOL[gg]; },
   miniDraw() {
-    const c = $('mini'); if (!c || MODE !== this) return; const N = this.N, x = c.getContext('2d');
+    const c = $('mini'); if (!c || MODE !== this) return; const N = this.N; if (c.width !== N) { c.width = c.height = N; this.miniImg = null; } const x = c.getContext('2d');
     if (!this.miniImg) { this.miniImg = x.createImageData(N, N); }
     const d = this.miniImg.data; for (let i = 0; i < N * N; i++) { const n = parseInt(this.tileCol(i).slice(1), 16); d[i * 4] = n >> 16; d[i * 4 + 1] = (n >> 8) & 255; d[i * 4 + 2] = n & 255; d[i * 4 + 3] = 255; }
     x.putImageData(this.miniImg, 0, 0);
@@ -62,19 +62,19 @@ Object.assign(Sanct, {
   },
   showMap() {
     const N = this.N, a = this.a, S = 3;
-    const zs = ['meadow', 'park', 'plains', 'beach', 'sea', 'wildwood', 'moor', 'outback', 'jungle', 'forest', 'mountain', 'snow', 'volcano', 'desert', 'savanna', 'marsh', 'lake'];
-    UI.modal(`<h2>🗺 SANCTUARY MAP</h2><p class="small">Tap a place on the map, or a button, to travel there. The white areas are where you can build.</p><canvas id="mapc" class="mapc" width="${N * S}" height="${N * S}"></canvas>
+    const zs = ['meadow', 'park', 'plains', 'beach', 'sea', 'wildwood', 'moor', 'outback', 'jungle', 'forest', 'mountain', 'snow', 'volcano', 'desert', 'savanna', 'marsh', 'lake', 'cliffs', 'shore'];
+    UI.modal(`<h2>🗺 SANCTUARY MAP</h2><p class="small">Arlo's Sanctuary Island! Tap a place on the map, or a button, to travel there. White edges show where you can build. The sea all round the island is for sea pens.</p><canvas id="mapc" class="mapc" width="${N * S}" height="${N * S}"></canvas>
     <div class="lbl">BUILDING AREAS</div><div>${zs.slice(0, 5).map(z => `<button class="btn sm" data-z="${z}" style="border-color:${ZCOL[z]}">${ZONES[z][0]}</button>`).join('')}</div>
     <div class="lbl">GATHERING AREAS</div><div>${zs.slice(5).map(z => `<button class="btn sm" data-z="${z}">${ZONES[z][0]}</button>`).join('')}</div><button class="btn go" id="mpx">CLOSE</button>`, { wide: true });
     const c = $('mapc'), x = c.getContext('2d');
     for (let i = 0; i < N * N; i++) { x.fillStyle = this.tileCol(i); x.fillRect((i % N) * S, ((i / N) | 0) * S, S, S); }
     x.fillStyle = 'rgba(255,255,255,.65)'; for (let y = 0; y < N; y++) for (let k = 0; k < N; k++) { const z = this.zoneAt(k, y); if (!BUILDZ.has(z)) continue; if (k + 1 < N && this.zoneAt(k + 1, y) !== z) x.fillRect(k * S + S - 1, y * S, 1, S); if (k > 0 && this.zoneAt(k - 1, y) !== z) x.fillRect(k * S, y * S, 1, S); if (y + 1 < N && this.zoneAt(k, y + 1) !== z) x.fillRect(k * S, y * S + S - 1, S, 1); if (y > 0 && this.zoneAt(k, y - 1) !== z) x.fillRect(k * S, y * S, S, 1); }
     x.font = "bold 10px 'Nunito',sans-serif"; x.textAlign = 'center'; x.textBaseline = 'middle';
-    for (const z of zs) { const [zx, zy] = ZSPOT[z] || [0, 0]; if (!ZSPOT[z]) continue; x.fillStyle = 'rgba(0,0,0,.6)'; const w = x.measureText(ZONES[z][0]).width + 6; x.fillRect(zx * S - w / 2, zy * S - 7, w, 14); x.fillStyle = '#fff'; x.fillText(ZONES[z][0], zx * S, zy * S); }
+    for (const z of zs) { if (!ZSPOT[z] || z === 'sea') continue; const [zx, zy] = ZSPOT[z]; x.fillStyle = 'rgba(0,0,0,.6)'; const w = x.measureText(ZONES[z][0]).width + 6; x.fillRect(zx * S - w / 2, zy * S - 7, w, 14); x.fillStyle = '#fff'; x.fillText(ZONES[z][0], zx * S, zy * S); }
     for (const h of this.Z.habs) if (h.arrived) { x.fillStyle = '#ff5a7a'; x.font = '12px serif'; x.fillText('♥', h.x * S, h.y * S); }
     x.fillStyle = '#ff2a2a'; x.beginPath(); x.arc(a.x / TS * S, a.y / TS * S, 5, 0, TAU); x.fill(); x.strokeStyle = '#fff'; x.lineWidth = 2; x.stroke();
     c.onclick = e => { const r = c.getBoundingClientRect(); this.travel(Math.floor((e.clientX - r.left) / r.width * N), Math.floor((e.clientY - r.top) / r.height * N)); };
-    $('panel').querySelectorAll('[data-z]').forEach(b => b.onclick = () => { AU.init(); const sp = ZSPOT[b.dataset.z]; if (b.dataset.z === 'sea') { this.travel(73, 72); return; } this.travel(sp[0], sp[1]); });
+    $('panel').querySelectorAll('[data-z]').forEach(b => b.onclick = () => { AU.init(); const sp = ZSPOT[b.dataset.z]; if (b.dataset.z === 'sea') { this.travel(105, 104); return; } this.travel(sp[0], sp[1]); });
     UI.on('mpx', () => UI.close());
   },
   travel(tx, ty) {
@@ -87,7 +87,7 @@ Object.assign(Sanct, {
   /* ----- visitors walk along paths and give coins at happy homes ----- */
   spawnVisitor() {
     const N = this.N; let best = -1, bd = 1e9;
-    for (let i = 0; i < N * N; i++) { const gg = this.gnd[i]; if (gg !== G.GRAVEL && gg !== G.PLANK) continue; if (!this.inM(i % N, (i / N) | 0)) continue; const d = Math.hypot(i % N - 32, ((i / N) | 0) - 19); if (d < bd) { bd = d; best = i; } }
+    for (let i = 0; i < N * N; i++) { const gg = this.gnd[i]; if (gg !== G.GRAVEL && gg !== G.PLANK) continue; if (!this.inM(i % N, (i / N) | 0)) continue; const d = Math.hypot(i % N - 64, ((i / N) | 0) - 47); if (d < bd) { bd = d; best = i; } }
     if (best < 0) return false;
     const x = best % N, y = (best / N) | 0;
     this.vis.push({ x: x * TS + 8, y: y * TS + 12, cx: x, cy: y, prev: -1, tx: null, ty: null, life: 40 + rnd() * 30, out: 0, col: pick(VCOLS), c2: pick(VCOLS), kids: ri(0, 2), hat: rnd() < .4, seen: {}, wk: 0, t: rnd() * 9 });

@@ -31,36 +31,36 @@ const TOOLS = ['hands', 'axe', 'shovel', 'bucket', 'item', 'fence'];
 const SWIM = new Set(['polarbear', 'turtle', 'capybara', 'flamingo', 'duck', 'otter', 'frog', 'seal', 'puffin', 'crab', 'elephant']);
 const AQUA = new Set(['shark', 'starfish']);
 const REQ = {
-  gorilla: [['g', G.MOSS, 6, 'Jungle moss floor', 'Dig MOSS in the jungle (top left).'], ['o', [O.TREE, O.SAP], 3, 'Trees', 'Chop trees to get saplings, then plant them.'], ['o', [O.FRUIT, O.SAPF], 1, 'Fruit tree', 'Chop a red fruit tree to get a fruit sapling.'], ['w', 2, 'Pond tiles'], ['f', 'fruit']],
-  polarbear: [['g', G.SNOW, 8, 'Snow floor', 'Dig SNOW in the tundra (top right).'], ['w', 4, 'Icy pond tiles'], ['f', 'fish']],
-  turtle: [['g', G.SAND, 6, 'Sandy beach', 'Dig SAND in the desert (bottom right).'], ['w', 6, 'Lagoon tiles'], ['f', 'greens']],
-  lion: [['g', G.DRY, 8, 'Dry grass floor', 'Dig DRY GRASS in the savanna (bottom).'], ['o', [O.TREE, O.SAP], 2, 'Shady trees', 'Chop trees to get saplings, then plant them.'], ['t'], ['f', 'meat']],
-  capybara: [['g', G.MUD, 4, 'Muddy bank', 'Dig MUD in the marsh (bottom left).'], ['w', 6, 'River tiles'], ['o', [O.REEDS], 2, 'Reeds', 'Dig up REEDS in the marsh with your shovel.'], ['f', 'greens']],
-  flamingo: [['g', G.VOLC, 4, 'Volcanic rock', 'Dig VOLCANIC ROCK at the volcano (right).'], ['w', 4, 'Shallow pond tiles'], ['f', 'shrimp']],
+  gorilla: [['g', G.MOSS, 6, 'Jungle moss floor', 'Dig MOSS in the jungle (west).'], ['o', [O.TREE, O.SAP], 3, 'Trees', 'Chop trees to get saplings, then plant them.'], ['o', [O.FRUIT, O.SAPF], 1, 'Fruit tree', 'Chop a red fruit tree to get a fruit sapling.'], ['w', 2, 'Pond tiles'], ['f', 'fruit']],
+  polarbear: [['g', G.SNOW, 8, 'Snow floor', 'Dig SNOW in the snowy mountain tops (north).'], ['w', 4, 'Icy pond tiles'], ['f', 'fish']],
+  turtle: [['g', G.SAND, 6, 'Sandy beach', 'Dig SAND in the desert (south-west corner).'], ['w', 6, 'Lagoon tiles'], ['f', 'greens']],
+  lion: [['g', G.DRY, 8, 'Dry grass floor', 'Dig DRY GRASS in the savanna (west, between the jungle and the desert).'], ['o', [O.TREE, O.SAP], 2, 'Shady trees', 'Chop trees to get saplings, then plant them.'], ['t'], ['f', 'meat']],
+  capybara: [['g', G.MUD, 4, 'Muddy bank', 'Dig MUD in the marsh (south of the lake).'], ['w', 6, 'River tiles'], ['o', [O.REEDS], 2, 'Reeds', 'Dig up REEDS in the marsh with your shovel.'], ['f', 'greens']],
+  flamingo: [['g', G.VOLC, 4, 'Volcanic rock', 'Dig VOLCANIC ROCK at the volcano (north-east corner).'], ['w', 4, 'Shallow pond tiles'], ['f', 'shrimp']],
   hedgehog: [['o', [O.BUSH], 2, 'Bushes', 'Dig up BUSHES with your shovel.'], ['o', [O.LOGPILE], 1, 'Log pile', 'Make a LOG PILE in your bag.'], ['f', 'bugs']],
   duck: [['w', 4, 'Pond tiles'], ['o', [O.REEDS], 2, 'Reeds', 'Dig up REEDS by the lake with your shovel.'], ['o', [O.SHELTER], 1, 'Duck house', 'Make a SHELTER in your bag.'], ['f', 'seeds']],
-  snowleopard: [['g', G.ROCK, 6, 'Rocky floor', 'Dig ROCK in the mountains (top).'], ['g', G.SNOW, 3, 'Snow patch', 'Dig SNOW in the tundra (top right).'], ['o', [O.BOULDER], 2, 'Boulders', 'Dig up BOULDERS in the mountains.'], ['o', [O.SHELTER], 1, 'Cave shelter', 'Make a SHELTER in your bag.'], ['f', 'meat']],
-  camel: [['g', G.SAND, 8, 'Sand floor', 'Dig SAND in the desert (bottom right).'], ['w', 2, 'Oasis pond tiles'], ['o', [O.PALM, O.SAPP], 1, 'Palm tree', 'Chop a palm in the desert to get a palm sapling.'], ['t'], ['f', 'greens']],
-  fox: [['g', G.LEAF, 6, 'Woodland floor', 'Dig LEAF LITTER in the Wild Wood (top right).'], ['o', [O.CAVE, O.SETT], 1, 'A den', 'Make a BOULDER CAVE or a SETT in your bag.'], ['f', 'bugs']],
-  badger: [['g', G.LEAF, 6, 'Woodland floor', 'Dig LEAF LITTER in the Wild Wood (top right).'], ['o', [O.SETT], 1, 'Sett tunnel', 'Make a SETT in your bag (wood and a boulder).'], ['f', 'bugs']],
+  snowleopard: [['g', G.ROCK, 6, 'Rocky floor', 'Dig ROCK in the mountains (north).'], ['g', G.SNOW, 3, 'Snow patch', 'Dig SNOW in the snowy mountain tops (north).'], ['o', [O.BOULDER], 2, 'Boulders', 'Dig up BOULDERS in the mountains.'], ['o', [O.SHELTER], 1, 'Cave shelter', 'Make a SHELTER in your bag.'], ['f', 'meat']],
+  camel: [['g', G.SAND, 8, 'Sand floor', 'Dig SAND in the desert (south-west corner).'], ['w', 2, 'Oasis pond tiles'], ['o', [O.PALM, O.SAPP], 1, 'Palm tree', 'Chop a palm in the desert to get a palm sapling.'], ['t'], ['f', 'greens']],
+  fox: [['g', G.LEAF, 6, 'Woodland floor', 'Dig LEAF LITTER in the Wild Wood (east).'], ['o', [O.CAVE, O.SETT], 1, 'A den', 'Make a BOULDER CAVE or a SETT in your bag.'], ['f', 'bugs']],
+  badger: [['g', G.LEAF, 6, 'Woodland floor', 'Dig LEAF LITTER in the Wild Wood (east).'], ['o', [O.SETT], 1, 'Sett tunnel', 'Make a SETT in your bag (wood and a boulder).'], ['f', 'bugs']],
   redsquirrel: [['o', [O.PINE, O.TREE, O.BIRCH, O.SAP], 3, 'Trees to climb', 'Plant saplings. Chop trees to get them.'], ['o', [O.NESTBOX], 1, 'Drey box', 'Make a NEST BOX in your bag.'], ['f', 'nuts']],
   dormouse: [['o', [O.BUSH, O.HAZEL], 3, 'Hedge bushes', 'Dig up BUSHES with your shovel and plant them.'], ['o', [O.NESTBOX], 1, 'Nest box', 'Make a NEST BOX in your bag.'], ['f', 'nuts']],
   barnowl: [['o', [O.NESTBOX], 1, 'Owl box', 'Make a NEST BOX in your bag.'], ['o', [O.TALL], 3, 'Long grass', 'Dig up LONG GRASS with your shovel and plant it inside. Voles live there!'], ['f', 'meat']],
   otter: [['w', 6, 'River tiles'], ['o', [O.LOGPILE], 1, 'Holt (log pile)', 'Make a LOG PILE in your bag.'], ['f', 'fish']],
-  kingfisher: [['w', 4, 'Stream tiles'], ['g', G.MUD, 2, 'Muddy bank', 'Dig MUD in the marsh (bottom left).'], ['o', [O.TREE, O.SAP, O.BIRCH], 1, 'Perch tree', 'Plant a sapling for a perch.'], ['f', 'fish']],
+  kingfisher: [['w', 4, 'Stream tiles'], ['g', G.MUD, 2, 'Muddy bank', 'Dig MUD in the marsh (south of the lake).'], ['o', [O.TREE, O.SAP, O.BIRCH], 1, 'Perch tree', 'Plant a sapling for a perch.'], ['f', 'fish']],
   frog: [['w', 4, 'Pond tiles'], ['o', [O.REEDS, O.LILY], 2, 'Reeds or lilies', 'Dig up REEDS or collect LILIES from the lake.'], ['o', [O.LOGPILE], 1, 'Log pile to hide in', 'Make a LOG PILE in your bag.'], ['f', 'bugs']],
   ladybird: [['o', [O.FLOWER], 4, 'Flowers', 'Pick FLOWERS with your hands and plant them.'], ['o', [O.BUGHOTEL], 1, 'Bug hotel', 'Make a BUG HOTEL in your bag.'], ['f', 'bugs']],
   bumblebee: [['o', [O.FLOWER, O.HEATHER], 6, 'Flowers and heather', 'Pick FLOWERS, and dig up HEATHER on the moor.'], ['o', [O.BUGHOTEL], 1, 'Bee hotel', 'Make a BUG HOTEL in your bag.'], ['f', 'nectar']],
   puffin: [['g', G.GRASS, 4, 'Cliff-top grass', 'Use GRASS blocks. Dig them in the meadow or park.'], ['w', 4, 'Sea or pond tiles'], ['o', [O.NESTBOX], 1, 'Burrow box', 'Make a NEST BOX in your bag.'], ['f', 'fish']],
-  seal: [['g', G.SAND, 4, 'Beach to rest on', 'Build on the BEACH (bottom right corner).'], ['w', 10, 'Sea tiles'], ['f', 'fish']],
+  seal: [['g', G.SAND, 4, 'Beach to rest on', 'Build on the BEACH bay (south-east corner).'], ['w', 10, 'Sea tiles'], ['f', 'fish']],
   crab: [['g', G.SAND, 3, 'Sandy floor', 'Build on the BEACH.'], ['o', [O.ROCKPOOL], 2, 'Rock pools', 'Make ROCK POOLS in your bag (2 boulders each).'], ['f', 'shrimp']],
   starfish: [['o', [O.ROCKPOOL], 2, 'Rock pools', 'Make ROCK POOLS in your bag (2 boulders each).'], ['w', 3, 'Water tiles'], ['f', 'shrimp']],
-  shark: [['w', CONFIG.sanct.seaPen, 'Sea tiles (a BIG net pen)', 'Row to the OPEN SEA. Use the fence tool on the water to make nets.'], ['o', [O.SEAWEED], 2, 'Seaweed', 'Collect SEAWEED in the sea from your boat, then place it.'], ['f', 'fish']],
-  elephant: [['g', G.DRY, 10, 'Grassland', 'Build on the GREAT PLAINS (bottom). Its floor is dry grass.'], ['w', 6, 'Water hole tiles'], ['o', [O.TREE, O.SAP], 2, 'Shady trees', 'Plant tree saplings.'], ['f', 'greens']],
-  rhino: [['g', G.DRY, 8, 'Grassland', 'Build on the GREAT PLAINS (bottom).'], ['g', G.MUD, 4, 'Mud wallow', 'Dig MUD in the marsh (bottom left) and place it.'], ['o', [O.TREE, O.SAP], 1, 'Shade tree', 'Plant a tree sapling.'], ['t'], ['f', 'greens']],
-  kangaroo: [['g', G.REDSAND, 8, 'Red sand', 'Dig RED SAND in the Outback (round the Great Plains).'], ['o', [O.BUSH], 2, 'Shrubs for shade', 'Dig up BUSHES with your shovel.'], ['t'], ['f', 'greens']],
+  shark: [['w', CONFIG.sanct.seaPen, 'Sea tiles (a BIG net pen)', 'Row out to sea from the beach bay. Use the fence tool on the water to make nets.'], ['o', [O.SEAWEED], 2, 'Seaweed', 'Collect SEAWEED in the sea from your boat, then place it.'], ['f', 'fish']],
+  elephant: [['g', G.DRY, 10, 'Grassland', 'Build on the GREAT PLAINS (south). Its floor is dry grass.'], ['w', 6, 'Water hole tiles'], ['o', [O.TREE, O.SAP], 2, 'Shady trees', 'Plant tree saplings.'], ['f', 'greens']],
+  rhino: [['g', G.DRY, 8, 'Grassland', 'Build on the GREAT PLAINS (south).'], ['g', G.MUD, 4, 'Mud wallow', 'Dig MUD in the marsh (south of the lake) and place it.'], ['o', [O.TREE, O.SAP], 1, 'Shade tree', 'Plant a tree sapling.'], ['t'], ['f', 'greens']],
+  kangaroo: [['g', G.REDSAND, 8, 'Red sand', 'Dig RED SAND in the Outback (along the south coast).'], ['o', [O.BUSH], 2, 'Shrubs for shade', 'Dig up BUSHES with your shovel.'], ['t'], ['f', 'greens']],
   eagle: [['o', [O.PINE, O.TREE, O.SAP], 2, 'Tall trees', 'Plant tree saplings.'], ['o', [O.NESTBOX], 1, 'Big nest', 'Make a NEST BOX in your bag.'], ['w', 4, 'Fishing water'], ['f', 'fish']],
-  tortoise: [['g', G.VOLC, 4, 'Volcanic rock', 'Dig VOLCANIC ROCK at the volcano (right).'], ['o', [O.BOULDER], 1, 'A rock to rest by', 'Dig up a BOULDER.'], ['o', [O.SHELTER], 1, 'Shelter', 'Make a SHELTER in your bag.'], ['f', 'greens']]
+  tortoise: [['g', G.VOLC, 4, 'Volcanic rock', 'Dig VOLCANIC ROCK at the volcano (north-east corner).'], ['o', [O.BOULDER], 1, 'A rock to rest by', 'Dig up a BOULDER.'], ['o', [O.SHELTER], 1, 'Shelter', 'Make a SHELTER in your bag.'], ['f', 'greens']]
 };
 /* what each animal enjoys: these decorations give extra Happy Points */
 const LIKES = { fox: [O.MUSH, O.BALL, O.LOGPILE], badger: [O.MUSH, O.LOGPILE], redsquirrel: [O.MUSH, O.HAZEL], dormouse: [O.FLOWER, O.HAZEL], barnowl: [O.LANTERN, O.FLAG], otter: [O.LILY, O.BALL], kingfisher: [O.LILY, O.FLOWER], frog: [O.LILY, O.MUSH],
@@ -71,7 +71,7 @@ const BIOMEOF = { [G.GRASS]: 'meadow', [G.DRY]: 'savannah', [G.SNOW]: 'snowy', [
 const HOMEBIO = { gorilla: 'jungle', polarbear: 'snowy', turtle: 'beach', lion: 'savannah', capybara: 'wetland', flamingo: 'volcanic', hedgehog: 'meadow', duck: 'wetland', snowleopard: 'rocky', camel: 'beach',
   fox: 'woodland', badger: 'woodland', redsquirrel: 'woodland', dormouse: 'meadow', barnowl: 'meadow', otter: 'wetland', kingfisher: 'wetland', frog: 'wetland', ladybird: 'meadow', bumblebee: 'meadow',
   puffin: 'meadow', seal: 'sea', crab: 'beach', starfish: 'beach', shark: 'sea', elephant: 'savannah', rhino: 'savannah', kangaroo: 'outback', eagle: 'woodland', tortoise: 'volcanic' };
-const FOODTIP = { fruit: 'Pick FRUIT from red fruit trees with your hands.', fish: 'Row your BOAT onto the lake (left) and press USE to go fishing.', greens: 'Pick LEAFY GREENS from bushes with your hands.', meat: 'Buy MEAT at the Ranger Hut with 💎 treasures, or at the Food Store with coins.', shrimp: 'Catch SHRIMP in the marsh water (bottom left).', bugs: 'Find BUGS in old logs in the forest (top).', seeds: 'Collect SEEDS from tall golden grass.',
+const FOODTIP = { fruit: 'Pick FRUIT from red fruit trees with your hands.', fish: 'Row your BOAT onto the lake (west of the meadow) and press USE to go fishing.', greens: 'Pick LEAFY GREENS from bushes with your hands.', meat: 'Buy MEAT at the Ranger Hut with 💎 treasures, or at the Food Store with coins.', shrimp: 'Catch SHRIMP in the marsh water (bottom left).', bugs: 'Find BUGS in old logs in the forest (north of the meadow).', seeds: 'Collect SEEDS from tall golden grass.',
   nuts: 'Pick NUTS from hazel bushes in the Wild Wood, or pine cones from pine trees.', nectar: 'Collect NECTAR from heather on the moor, or buy it at the FOOD STORE.' };
 const ZONES = {
   meadow: ['Sanctuary Meadow', 'Build your animal homes here.'], jungle: ['Jungle', 'Dig MOSS here. Chop red fruit trees for fruit saplings.'], forest: ['Forest', 'Lots of trees to chop. Old logs hide bugs.'],
@@ -107,7 +107,7 @@ const Sanct = {
   /* ----- start / save ----- */
   start() {
     const N = this.N;
-    if (DB.sanct && DB.sanct.gnd && DB.sanct.gnd.length === 64 * 64) this.grow64();
+    if (DB.sanct && DB.sanct.gnd && DB.sanct.gnd.length !== N * N) { const on = Math.round(Math.sqrt(DB.sanct.gnd.length)); if (OLDRECT[on]) this.migrateIsland(on); }
     if (!DB.sanct || !DB.sanct.gnd || DB.sanct.gnd.length !== N * N) this.newWorld();
     const Z = this.Z = DB.sanct;
     this.gnd = Uint8Array.from(Z.gnd, c => c.charCodeAt(0) - 65); this.obj = Uint8Array.from(Z.obj, c => c.charCodeAt(0) - 65);
@@ -125,6 +125,7 @@ const Sanct = {
     this.evalAll();
     CAM.x = clamp(this.a.x - VW / 2, 0, N * TS - VW); CAM.y = clamp(this.a.y - VH / 2, 0, N * TS - VH);
     setMode(this, 'm-sanct'); AMB.set('quiet'); this.buildHotbar(); this.miniK = ''; this.mapImg = null;
+    if (Z.told.islandNews === 0) { Z.told.islandNews = 1; setTimeout(() => { if (MODE === this) UI.toast('🏝 Your Sanctuary is now an ISLAND! Everything you built has moved with you. Tap the map in the corner to explore.', 6000); }, 1200); }
     if (!DB.tips.hutIntro && Z.told.how) { DB.tips.hutIntro = 1; setTimeout(() => { if (MODE === this) UI.toast(`💎 NEW: the red Ranger Hut is now a Treasure Shop! Spend the 💎 you collect in the Story landscapes. You have ${DB.gems || 0}.`, 5500); }, 2500); }
     if (!Z.told.how) { Z.told.how = 1; showHow('sanct', () => UI.toast('Welcome to your Sanctuary, Ranger Arlo!')); }
   },
@@ -310,8 +311,8 @@ const Sanct = {
       }
     } else if (tool === 'bucket') {
       if (gg === G.WATER && o === O.NONE) { Z.water = 5; SFX.splash(); ftext('Bucket full!', wx, wy - 8, '#7cc0f2'); burst(wx, wy, '#bfe6ff', 8); this.hotK = ''; }
-      else if (o === O.TROUGH) { if (Z.water > 0) { Z.water--; this.obj[i] = O.TROUGHF; SFX.splash(); this.hotK = ''; } else UI.toast('Your bucket is empty. Fill it at the lake (left).'); }
-      else if (gg === G.PIT) { if (Z.water > 0) { Z.water--; this.gnd[i] = G.WATER; SFX.splash(); burst(wx, wy, '#bfe6ff', 10); this.floodFrom(tx, ty); this.hotK = ''; } else UI.toast('Your bucket is empty. Fill it at the lake (left).'); }
+      else if (o === O.TROUGH) { if (Z.water > 0) { Z.water--; this.obj[i] = O.TROUGHF; SFX.splash(); this.hotK = ''; } else UI.toast('Your bucket is empty. Fill it at the lake (west of the meadow).'); }
+      else if (gg === G.PIT) { if (Z.water > 0) { Z.water--; this.gnd[i] = G.WATER; SFX.splash(); burst(wx, wy, '#bfe6ff', 10); this.floodFrom(tx, ty); this.hotK = ''; } else UI.toast('Your bucket is empty. Fill it at the lake (west of the meadow).'); }
       else UI.toast(Z.water > 0 ? 'Dig a hole with your SHOVEL first, then pour water in.' : 'Stand by water and USE the bucket to fill it.');
     } else if (tool === 'item') {
       const k = Z.item, I = ITEM[k]; if (!k || !(Z.inv[k] > 0)) { Z.item = null; Z.tool = 0; this.hotK = ''; return; }
@@ -725,14 +726,18 @@ const Sanct = {
     for (let y = y0; y <= Math.min(N - 1, y1); y++) for (let x = x0; x <= x1; x++) {
       const gg = this.gnd[y * N + x], sx = x * TS - ox, sy = y * TS - oy;
       g.drawImage(gg === G.WATER ? TILES['water' + ((wf + x + y) % 2)] : TILES[GT[gg]], sx, sy);
-      if (gg === G.WATER) { if (y > 0 && this.gnd[(y - 1) * N + x] !== G.WATER) { g.fillStyle = 'rgba(0,0,40,.28)'; g.fillRect(sx, sy, TS, 3); } const zz = this.zoneAt(x, y); if (zz === 'snow') { g.fillStyle = 'rgba(220,245,255,.35)'; g.fillRect(sx, sy, TS, TS); } else if (zz === 'sea') { g.fillStyle = 'rgba(10,40,120,.28)'; g.fillRect(sx, sy, TS, TS); } }
+      if (gg === G.WATER) { if (y > 0 && this.gnd[(y - 1) * N + x] !== G.WATER) { g.fillStyle = 'rgba(0,0,40,.28)'; g.fillRect(sx, sy, TS, 3); } const zz = this.zoneAt(x, y); if (zz === 'snow') { g.fillStyle = 'rgba(220,245,255,.35)'; g.fillRect(sx, sy, TS, TS); } else if (zz === 'sea') { g.fillStyle = 'rgba(10,40,120,.28)'; g.fillRect(sx, sy, TS, TS);
+          const i = y * N + x, up = y > 0 && this.gnd[(y - 1) * N + x] !== G.WATER, cl = up && this.zoneAt(x, y - 1) === 'cliffs';
+          if (cl) { box(sx, sy, TS, 7, '#6e727a'); px('#8b8f96', sx + 2, sy + 1, 5, 2); px('#5a5e66', sx, sy + 6, TS, 1); }
+          const ln = up || (x > 0 && this.gnd[i - 1] !== G.WATER) || (x + 1 < N && this.gnd[i + 1] !== G.WATER) || (y + 1 < N && this.gnd[i + N] !== G.WATER);
+          if (ln) { const f = ((this.t * 2 + x * .7 + y * .3) % 2) | 0; g.fillStyle = 'rgba(255,255,255,.55)'; if (up) g.fillRect(sx + f * 3, sy + (cl ? 8 : 1) + f, TS - 6, 1); if (x > 0 && this.gnd[i - 1] !== G.WATER) g.fillRect(sx + 1 + f, sy + 3, 1, TS - 6); if (x + 1 < N && this.gnd[i + 1] !== G.WATER) g.fillRect(sx + 14 - f, sy + 3, 1, TS - 6); if (y + 1 < N && this.gnd[i + N] !== G.WATER) g.fillRect(sx + 3, sy + 14 - f, TS - 6, 1); } } }
       else if (y > 0 && this.gnd[(y - 1) * N + x] === G.WATER) { g.fillStyle = 'rgba(255,255,255,.18)'; g.fillRect(sx, sy, TS, 1); }
     }
     // borders between areas: white dashes round building areas, soft lines elsewhere
     for (let y = y0; y <= y1; y++) for (let x = x0; x <= x1; x++) {
-      const z = this.zoneAt(x, y), sx = x * TS - ox, sy = y * TS - oy, b = BUILDZ.has(z);
-      if (x + 1 < N && this.zoneAt(x + 1, y) !== z) { const b2 = b || BUILDZ.has(this.zoneAt(x + 1, y)); g.fillStyle = b2 ? 'rgba(255,255,255,.7)' : 'rgba(0,0,0,.18)'; for (let k = 0; k < 16; k += b2 ? 6 : 4) g.fillRect(sx + 15, sy + k, 2, b2 ? 4 : 2); }
-      if (y + 1 < N && this.zoneAt(x, y + 1) !== z) { const b2 = b || BUILDZ.has(this.zoneAt(x, y + 1)); g.fillStyle = b2 ? 'rgba(255,255,255,.7)' : 'rgba(0,0,0,.18)'; for (let k = 0; k < 16; k += b2 ? 6 : 4) g.fillRect(sx + k, sy + 15, b2 ? 4 : 2, 2); }
+      const z = this.zoneAt(x, y), sx = x * TS - ox, sy = y * TS - oy, b = BUILDZ.has(z) && z !== 'sea'; if (z === 'sea') continue;
+      if (x + 1 < N && this.zoneAt(x + 1, y) !== z && this.zoneAt(x + 1, y) !== 'sea') { const b2 = b || BUILDZ.has(this.zoneAt(x + 1, y)); g.fillStyle = b2 ? 'rgba(255,255,255,.7)' : 'rgba(0,0,0,.18)'; for (let k = 0; k < 16; k += b2 ? 6 : 4) g.fillRect(sx + 15, sy + k, 2, b2 ? 4 : 2); }
+      if (y + 1 < N && this.zoneAt(x, y + 1) !== z && this.zoneAt(x, y + 1) !== 'sea') { const b2 = b || BUILDZ.has(this.zoneAt(x, y + 1)); g.fillStyle = b2 ? 'rgba(255,255,255,.7)' : 'rgba(0,0,0,.18)'; for (let k = 0; k < 16; k += b2 ? 6 : 4) g.fillRect(sx + k, sy + 15, b2 ? 4 : 2, 2); }
     }
     // ghost fences waiting for wood, and the preview of what is being drawn
     g.globalAlpha = .45; for (const i of Z.plan) { const x = i % N, y = (i / N) | 0; if (x >= x0 && x <= x1 && y >= y0 && y <= y1) { box(x * TS - ox + 6, y * TS - oy + 1, 4, 14, '#bfe6ff'); px('#bfe6ff', x * TS - ox + 1, y * TS - oy + 6, 14, 2); } } g.globalAlpha = 1;
@@ -756,7 +761,8 @@ const Sanct = {
     // objects and creatures, sorted by row
     const ents = this.animals.map(A => ({ y: A.y, A })); ents.push({ y: a.y, arlo: 1 }); for (const V of this.vis) ents.push({ y: V.y, V }); ents.sort((p, q) => p.y - q.y); let ei = 0;
     for (let y = y0; y <= y1 + 2; y++) {
-      if (y < N) for (let x = Math.max(0, x0 - 1); x <= Math.min(N - 1, x1 + 1); x++) { const o = this.obj[y * N + x]; if (o && o !== O.BLOCK) this.drawObj(o, x * TS - ox, y * TS - oy, x, y, t); }
+      this.drawLandmarks(y, ox, oy, t);
+      if (y < N) for (let x = Math.max(0, x0 - 1); x <= Math.min(N - 1, x1 + 1); x++) { const o = this.obj[y * N + x]; if (o && o !== O.BLOCK && o !== O.PEAK) this.drawObj(o, x * TS - ox, y * TS - oy, x, y, t); }
       while (ei < ents.length && ents[ei].y < (y + 1) * TS) {
         const e = ents[ei++];
         if (e.V) { this.drawVisitor(e.V, ox, oy, t); continue; }

@@ -112,3 +112,17 @@
 - **Reading aloud can be switched off** from any question panel, the main menu or the Grown-ups page. With it off, a single tap chooses an answer straight away.
 - **Images get spoken labels.** Answers that are only pictures, such as the habitat scenes, are read out by name.
 - **Install as an app:** a full-screen button on Android and computers, the screen stays awake while playing, and the game works offline once installed.
+
+### Version 4.3: Sanctuary Island
+- **The Sanctuary is now one large island surrounded by sea**, 128 × 128 tiles.
+- **The land is laid out the way it would be in nature:**
+  - Snowy peaks and mountains run along the north. The volcano sits on the north-east corner of that high ground and is drawn as a large smoking cone with lava.
+  - Heather moor lies between the mountains and the volcano.
+  - A river runs from the mountains to the lake and out west through the jungle to the sea. Two plank bridges cross it.
+  - Going south it gets drier: jungle, then savanna, then desert with an oasis, then red outback along the south coast.
+  - The cooler east has the Wild Wood, with hazel hedgerows, and Woodland Park, for hedgehogs, foxes and badgers.
+  - There are sea cliffs along the north and west coasts, and sandy shores and a beach bay in the south-east.
+- **Building areas:** the Meadow in the middle, Woodland Park, the Great Plains, the Beach bay, and all of the sea around the island.
+- **Coast details:** surf on the shoreline and rocky cliff faces above the water.
+- **Older sanctuaries move onto the island automatically.** Each building area is moved over whole: fences, homes, animals, paint, food bowls and anything planned. A message in the game says that the Sanctuary has become an island.
+- **Map:** it now shows Sea Cliffs and Sandy Shore, and the in-game tips give directions for the island.
