@@ -16,7 +16,7 @@ const OLDRECT = {
 const VOLC = { x: 106, y: 22 }, PEAKS = [[44, 15, 0], [57, 11, 1], [70, 17, 0], [50, 23, 0]];
 Object.assign(ZONES, { cliffs: ['Sea Cliffs', 'High rocky cliffs. Dig ROCK here. Seabirds nest on the ledges.'], shore: ['Sandy Shore', 'Dig SAND here and collect shells.'] });
 Object.assign(ZCOL, { cliffs: '#8b8f96', shore: '#f0dc9c', sea: '#2a6ac0' });
-Object.assign(ZSPOT, { meadow: [64, 50], park: [100, 52], plains: [68, 92], beach: [100, 108], wildwood: [104, 30], moor: [88, 22], outback: [68, 110], jungle: [22, 50], forest: [62, 36], mountain: [66, 24], snow: [52, 16], volcano: [104, 30], desert: [22, 110], savanna: [24, 86], marsh: [42, 76], lake: [34, 56], cliffs: [30, 13], shore: [80, 116] });
+Object.assign(ZSPOT, { meadow: [64, 50], park: [100, 52], plains: [68, 92], beach: [100, 108], wildwood: [106, 78], moor: [88, 22], outback: [68, 110], jungle: [22, 50], forest: [62, 36], mountain: [66, 24], snow: [52, 16], volcano: [104, 30], desert: [22, 110], savanna: [24, 86], marsh: [42, 76], lake: [34, 56], cliffs: [30, 13], shore: [80, 116] });
 O.PEAK = 52; SOLID.add(O.PEAK);
 
 Object.assign(Sanct, {
@@ -29,18 +29,18 @@ Object.assign(Sanct, {
     const land = new Uint8Array(N * N);
     for (let y = 0; y < N; y++) for (let x = 0; x < N; x++) {
       const px2 = Math.max(24 - x, 0, x - 103), py2 = Math.max(24 - y, 0, y - 103), d = Math.hypot(px2, py2), n = this.noise(x, y, 9) * 8 - 4 + this.noise(x + 50, y, 4) * 3;
-      let L = d < 14 + n; if (inR(x, y, IRECT.meadow, 3) || inR(x, y, IRECT.park, 3) || inR(x, y, IRECT.plains, 3)) L = true;
-      if (inR(x, y, IRECT.bay)) { const rx = x - 96 + 64, ry = y - 96 + 64; L = rx <= 73 || ry <= 66; }
+      let L = d < 14 + n; if (Math.hypot(x - 127, y - 127) < 36 + n * .6) L = false;   // a big round bay in the south-east
+      if (inR(x, y, IRECT.meadow, 3) || inR(x, y, IRECT.park, 3) || inR(x, y, IRECT.plains, 3)) L = true;
       land[y * N + x] = L ? 1 : 0;
     }
     const nearSea = (x, y, r) => { for (let dy = -r; dy <= r; dy++) for (let dx = -r; dx <= r; dx++) { const X = x + dx, Y = y + dy; if (X < 0 || Y < 0 || X >= N || Y >= N || !land[Y * N + X]) return true; } return false; };
     for (let y = 0; y < N; y++) for (let x = 0; x < N; x++) {
       const i = y * N + x; let z;
       if (!land[i]) z = 'sea';
-      else if (inR(x, y, IRECT.bay)) z = 'beach';
       else if (inR(x, y, IRECT.meadow)) z = 'meadow';
       else if (inR(x, y, IRECT.park)) z = 'park';
       else if (inR(x, y, IRECT.plains)) z = 'plains';
+      else if (x + y >= 176 && x >= 80 && y >= 80 && nearSea(x, y, 6)) z = 'beach';
       else if (nearSea(x, y, 2)) z = (y < 56 || x < 34) && !(x > 96 && y > 70) ? 'cliffs' : 'shore';
       else if (Math.hypot(x - VOLC.x, (y - VOLC.y) * 1.15) < 13) z = 'volcano';
       else if (ell(x, y, 54, 16, 15 + this.noise(x, y, 5) * 4, 7)) z = 'snow';
@@ -58,6 +58,12 @@ Object.assign(Sanct, {
       ZM[i] = id(z);
     }
     this.ZM = ZM;
+    /* the beach curves round the south-east coast: find its middle, and the best spot for the sea boat */
+    let bx = 0, by = 0, bn = 0; for (let i = 0; i < N * N; i++) if (ZM[i] === id('beach')) { bx += i % N; by += (i / N) | 0; bn++; }
+    const cx = bx / bn, cy = by / bn; let best = null, bd = 1e9, boat = null, od = 1e9;
+    for (let i = 0; i < N * N; i++) { const x = i % N, y = (i / N) | 0; if (ZM[i] === id('beach')) { const d = Math.hypot(x - cx, y - cy); if (d < bd) { bd = d; best = [x, y]; } }
+      else if (ZM[i] === id('sea') && x > 0 && y > 0 && x < N - 1 && y < N - 1) { const nb = [i - 1, i + 1, i - N, i + N].some(j => ZM[j] === id('beach')); if (nb) { const d = Math.hypot(x - cx - 6, y - cy - 6); if (d < od) { od = d; boat = [x, y]; } } } }
+    ZSPOT.beach = best; this.boatSpot = boat;
   },
   zoneAt(x, y) { if (!this.ZM) this.buildZM(); if (x < 0 || y < 0 || x >= this.N || y >= this.N) return 'sea'; return ZLIST[this.ZM[y * this.N + x]]; },
 
@@ -65,7 +71,7 @@ Object.assign(Sanct, {
   newWorld() {
     const N = this.N, r = RNG((rnd() * 1e9) | 0), gnd = new Uint8Array(N * N), obj = new Uint8Array(N * N);
     this.genIsland(gnd, obj, r);
-    DB.sanct = { gnd: '', obj: '', inv: { wood: 6, fence: 16, gate: 1, sign: 1, bowl: 1 }, water: 0, habs: [], meta: {}, port: {}, plan: [], fc: {}, fcol: 0, fst: 0, bps: [], v3: 1, v4: 1, island: 1, boat: false, time: 30, tool: 0, item: null, px: 64 * TS + 8, py: 48 * TS + 8, told: {}, doneAll: false };
+    DB.sanct = { gnd: '', obj: '', inv: { wood: 6, fence: 16, gate: 1, sign: 1, bowl: 1 }, water: 0, habs: [], meta: {}, port: {}, plan: [], fc: {}, fcol: 0, fst: 0, bps: [], v3: 1, v4: 1, island: 1, beach2: 1, boat: false, time: 30, tool: 0, item: null, px: 64 * TS + 8, py: 48 * TS + 8, told: {}, doneAll: false };
     this.gnd = gnd; this.obj = obj; this.Z = DB.sanct; this.save(true);
   },
   genIsland(gnd, obj, r) {
@@ -74,7 +80,7 @@ Object.assign(Sanct, {
     for (let y = 0; y < N; y++) for (let x = 0; x < N; x++) {
       const z = this.zoneAt(x, y), i = y * N + x, q = r(); let gg = GZ[z], o = 0;
       if (z === 'sea') o = q < .025 ? O.SEAWEED : 0;
-      else if (z === 'beach') { const rx = x - 96 + 64; gg = rx <= 66 && y > 98 ? G.SHINGLE : G.SAND; o = q < .05 ? O.SHELLS : q < .08 ? O.BOULDER : 0; }
+      else if (z === 'beach') { o = q < .05 ? O.SHELLS : q < .07 ? O.BOULDER : q < .085 ? O.PALM : 0; }
       else if (z === 'shore') o = q < .06 ? O.SHELLS : q < .08 ? O.PALM : 0;
       else if (z === 'cliffs') o = q < .1 ? O.BOULDER : q < .14 ? O.FLOWER : q < .2 ? O.TALL : 0;
       else if (z === 'meadow') { if (!(x >= 59 && x <= 69 && y >= 44 && y <= 52)) o = q < .035 ? O.TREE : q < .075 ? O.FLOWER : q < .105 ? O.TALL : q < .12 ? O.BUSH : 0; }
@@ -107,8 +113,9 @@ Object.assign(Sanct, {
     /* the ranger hut, campfire, Food Store, jobs board, the boats and rock pools */
     set(64, 45, G.GRASS, O.HUT); set(63, 45, G.GRASS, O.BLOCK); set(65, 45, G.GRASS, O.BLOCK); set(67, 46, G.GRASS, O.FIRE);
     set(60, 45, G.GRASS, O.STORE); set(68, 49, G.GRASS, O.JOBS);
-    for (const [x, y] of [[98, 102], [97, 110], [99, 120], [101, 115]]) set(x, y, G.SAND, O.ROCKPOOL);
-    set(106, 104, G.WATER, O.BOAT); set(105, 104, G.SAND, 0);
+    { const B = [], bz = ZLIST.indexOf('beach'); for (let i = 0; i < N * N; i++) if (this.ZM[i] === bz && [i - 1, i + 1, i - N, i + N].some(j => this.ZM[j] === 0)) B.push(i);
+      B.sort((p2, q2) => (p2 % N - p2 / N) - (q2 % N - q2 / N)); for (let k = 1; k <= 4; k++) { const i = B[Math.floor(B.length * k / 5)]; if (i != null) set(i % N, (i / N) | 0, G.SAND, O.ROCKPOOL); } }
+    if (this.boatSpot) { const [x, y] = this.boatSpot; set(x, y, G.WATER, O.BOAT); for (const [dx, dy] of [[-1, 0], [0, -1], [1, 0], [0, 1]]) if (this.zoneAt(x + dx, y + dy) === 'beach') obj[(y + dy) * N + x + dx] = 0; }
     set(39, 54, G.WATER, O.BOAT); set(40, 54, G.SAND, 0); set(41, 54, G.SAND, 0);   // the lake boat
   },
   /* move an older, square sanctuary onto the island: every building area keeps exactly what Arlo built */
@@ -116,14 +123,37 @@ Object.assign(Sanct, {
     const Z = DB.sanct, N = this.N, gnd = new Uint8Array(N * N), obj = new Uint8Array(N * N);
     this.genIsland(gnd, obj, RNG(hash('island' + (Z.px || 1))));
     const maps = OLDRECT[oldN] || [], newPos = (x, y) => { for (const [x0, y0, x1, y1, k] of maps) if (x >= x0 && x <= x1 && y >= y0 && y <= y1) { const R = IRECT[k]; return [x - x0 + R[0], y - y0 + R[1]]; } return null; };
-    for (const [x0, y0, x1, y1, k] of maps) for (let y = y0; y <= y1; y++) for (let x = x0; x <= x1; x++) { const o = y * oldN + x, [nx, ny] = newPos(x, y), n = ny * N + nx; gnd[n] = Z.gnd.charCodeAt(o) - 65; obj[n] = Z.obj.charCodeAt(o) - 65; }
+    const og = i => Z.gnd.charCodeAt(i) - 65, oo = i => Z.obj.charCodeAt(i) - 65;
+    for (const [x0, y0, x1, y1, k] of maps) {
+      let keep = null;
+      if (k === 'bay') {   // the new beach curves, so only the pens and built things come across
+        keep = this.keepTiles(oo, oldN, [x0, y0, x1, y1], Z.habs);
+      }
+      for (let y = y0; y <= y1; y++) for (let x = x0; x <= x1; x++) { const o = y * oldN + x; if (keep && !keep.has(o)) continue; const [nx, ny] = newPos(x, y), n = ny * N + nx; gnd[n] = og(o); obj[n] = oo(o); }
+    }
     const conv = i => { const p = newPos(i % oldN, (i / oldN) | 0); return p ? p[1] * N + p[0] : -1; };
     const remap = m => { const out = {}; for (const k in m || {}) { const j = conv(+k); if (j >= 0) out[j] = m[k]; } return out; };
     Z.meta = remap(Z.meta); Z.port = remap(Z.port); Z.fc = remap(Z.fc); Z.plan = (Z.plan || []).map(conv).filter(j => j >= 0);
     Z.habs = Z.habs.filter(h => { const p = newPos(h.x, h.y); if (!p) return false; h.x = p[0]; h.y = p[1]; return true; });
     const ap = newPos(Math.floor(Z.px / TS), Math.floor(Z.py / TS)); if (ap && !Z.boat) { Z.px = ap[0] * TS + 8; Z.py = ap[1] * TS + 8; } else { Z.px = 64 * TS + 8; Z.py = 48 * TS + 8; Z.boat = false; }
     let s1 = '', s2 = ''; for (let i = 0; i < N * N; i++) { s1 += String.fromCharCode(65 + gnd[i]); s2 += String.fromCharCode(65 + obj[i]); } Z.gnd = s1; Z.obj = s2; Z.island = 1;
-    Z.told.islandNews = 0;
+    Z.told.islandNews = 0; Z.beach2 = 1;
+  },
+  /* tiles to keep when the land around them is redrawn: the inside of every closed pen, its fences, and anything built */
+  keepTiles(oo, W, [x0, y0, x1, y1], habs) {
+    const keep = new Set(), built = new Set([O.FENCE, O.GATE, O.SIGN, O.BOWL, O.BOWLF, O.TROUGH, O.TROUGHF, O.SHELTER, O.LOGPILE, O.LANTERN, O.BENCH, O.FLAG, O.BALL, O.CAVE, O.SETT, O.NESTBOX, O.BUGHOTEL, O.FOUNTAIN, O.STATUE, O.CHEST, O.SWING, O.ARCH, O.LILY]);
+    for (const h of habs) { if (h.x < x0 || h.x > x1 || h.y < y0 || h.y > y1) continue; const seen = new Set([h.y * W + h.x]), st = [h.y * W + h.x]; let ok = true;
+      while (st.length) { const c = st.pop(), cx = c % W, cy = (c / W) | 0; for (const [dx, dy] of [[1, 0], [-1, 0], [0, 1], [0, -1]]) { const X = cx + dx, Y = cy + dy; if (X < x0 || X > x1 || Y < y0 || Y > y1) { ok = false; continue; } const j = Y * W + X; if (seen.has(j) || oo(j) === O.FENCE || oo(j) === O.GATE) continue; seen.add(j); st.push(j); } if (seen.size > 1500) { ok = false; break; } }
+      if (ok) for (const c of seen) { const cx = c % W, cy = (c / W) | 0; for (let dy = -1; dy <= 1; dy++) for (let dx = -1; dx <= 1; dx++) keep.add((cy + dy) * W + cx + dx); } }
+    for (let y = y0; y <= y1; y++) for (let x = x0; x <= x1; x++) if (built.has(oo(y * W + x))) keep.add(y * W + x);
+    return keep;
+  },
+  /* islands made before the curved beach: redraw the south-east coast, keeping every pen and built thing */
+  fixBeach() {
+    const Z = this.Z, N = this.N, gnd = new Uint8Array(N * N), obj = new Uint8Array(N * N); this.genIsland(gnd, obj, RNG(hash('beach' + (Z.px || 1))));
+    const R = [80, 80, 127, 127], keep = this.keepTiles(i => this.obj[i], N, R, Z.habs), keepZ = new Set(['meadow', 'park', 'plains']);
+    for (let y = R[1]; y <= R[3]; y++) for (let x = R[0]; x <= R[2]; x++) { const i = y * N + x; if (keep.has(i) || keepZ.has(this.zoneAt(x, y))) continue; this.gnd[i] = gnd[i]; this.obj[i] = obj[i]; }
+    Z.beach2 = 1;
   },
   /* very old sanctuaries also need the Food Store and jobs board */
   upgrade4() {

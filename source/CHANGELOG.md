@@ -126,3 +126,8 @@
 - **Coast details:** surf on the shoreline and rocky cliff faces above the water.
 - **Older sanctuaries move onto the island automatically.** Each building area is moved over whole: fences, homes, animals, paint, food bowls and anything planned. A message in the game says that the Sanctuary has become an island.
 - **Map:** it now shows Sea Cliffs and Sandy Shore, and the in-game tips give directions for the island.
+
+### Version 4.4: a curved beach
+- **The beach now curves around a big round bay** in the south-east, instead of the old right-angled strip.
+- **Rock pools and the sea boat** sit along the new curved shoreline.
+- **Islands made before this update** have their south-east coast redrawn. Every pen, fence, sign, bowl and decoration there is kept exactly where it was.

@@ -117,6 +117,7 @@ const Sanct = {
       for (let i = 0; i < this.gnd.length; i++) if (this.gnd[i] === G.WATER && this.obj[i] === O.NONE && this.zoneAt(i % N, (i / N) | 0) === 'lake' && Story.h01(i * 31) < .04) this.obj[i] = O.LILY;
     }
     if (!Z.v4) this.upgrade4();
+    if (!Z.beach2) this.fixBeach();
     this.a = { x: Z.px, y: Z.py, dir: 0, wk: 0, useT: 0, tx: null, ty: null, stuck: 0, boat: !!Z.boat };
     { const ti = this.idx(Math.floor(Z.px / TS), Math.floor((Z.py - 2) / TS)), wet = this.gnd[ti] === G.WATER; if (wet !== this.a.boat) { this.a.boat = false; this.a.x = 32 * TS + 8; this.a.y = 20 * TS + 8; } }
     this.dragS = null; this.bp = null; this.undo = []; this.fish = null; this.fmode = 'line';

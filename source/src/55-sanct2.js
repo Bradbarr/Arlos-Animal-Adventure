@@ -74,7 +74,7 @@ Object.assign(Sanct, {
     for (const h of this.Z.habs) if (h.arrived) { x.fillStyle = '#ff5a7a'; x.font = '12px serif'; x.fillText('♥', h.x * S, h.y * S); }
     x.fillStyle = '#ff2a2a'; x.beginPath(); x.arc(a.x / TS * S, a.y / TS * S, 5, 0, TAU); x.fill(); x.strokeStyle = '#fff'; x.lineWidth = 2; x.stroke();
     c.onclick = e => { const r = c.getBoundingClientRect(); this.travel(Math.floor((e.clientX - r.left) / r.width * N), Math.floor((e.clientY - r.top) / r.height * N)); };
-    $('panel').querySelectorAll('[data-z]').forEach(b => b.onclick = () => { AU.init(); const sp = ZSPOT[b.dataset.z]; if (b.dataset.z === 'sea') { this.travel(105, 104); return; } this.travel(sp[0], sp[1]); });
+    $('panel').querySelectorAll('[data-z]').forEach(b => b.onclick = () => { AU.init(); const sp = ZSPOT[b.dataset.z]; if (b.dataset.z === 'sea') { const bs = this.boatSpot || ZSPOT.beach; this.travel(bs[0] - 1, bs[1] - 1); return; } this.travel(sp[0], sp[1]); });
     UI.on('mpx', () => UI.close());
   },
   travel(tx, ty) {

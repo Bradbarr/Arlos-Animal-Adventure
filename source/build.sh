@@ -15,3 +15,19 @@ cp src/manifest.webmanifest src/sw.js web/
 VER=$(date +%Y%m%d%H%M%S); sed -i "s/__BUILD__/$VER/" web/sw.js
 : > web/.nojekyll
 wc -c index.html web/index.html
+# ---- Axl's edition: the same game, every "Arlo" becomes "Axl", with its own save and app name ----
+mkdir -p axl/web
+python3 - <<'PY'
+import re, shutil, os
+def axl(t):
+    t = t.replace('Arlo', 'Axl').replace('ARLO', 'AXL').replace('arlo', 'axl')
+    return t
+for src, dst in [('index.html', 'axl/index.html'), ('web/index.html', 'axl/web/index.html'), ('web/manifest.webmanifest', 'axl/web/manifest.webmanifest'), ('web/sw.js', 'axl/web/sw.js')]:
+    open(dst, 'w').write(axl(open(src).read()))
+if os.path.exists('axl/web/icons'): shutil.rmtree('axl/web/icons')
+shutil.copytree('web/icons', 'axl/web/icons'); open('axl/web/.nojekyll', 'w').close()
+for f in ['axl/index.html', 'axl/web/index.html', 'axl/web/manifest.webmanifest', 'axl/web/sw.js']:
+    n = len(re.findall('arlo', open(f).read(), re.I))
+    if n: raise SystemExit(f + ' still mentions Arlo %d times' % n)
+print('axl edition ok')
+PY
