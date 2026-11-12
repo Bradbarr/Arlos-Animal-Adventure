@@ -103,7 +103,7 @@ Object.assign(TASK, {
   habitat(c, end) {
     const A = ANIMALS[c.an], cat = HABCAT[c.an], oth = otherAnimals(c.an, 2, i => HABCAT[i] !== cat && ANIMALS[i].biome !== A.biome);
     Learn.seq([
-      nx => Learn.ask(`Where does the ${A.name.toLowerCase()} live?`, shuffle([c.an, ...oth]).map(i => ({ h: `<img class="pix lscene" src="${Learn.scene(i === c.an ? c.an : i)}" alt="">`, ok: i === c.an })), nx, { top: portH(c.an, false), right: `Yes! It lives in ${A.home}.`, wait: 1800 }),
+      nx => Learn.ask(`Where does the ${A.name.toLowerCase()} live?`, shuffle([c.an, ...oth]).map(i => ({ h: `<img class="pix lscene" src="${Learn.scene(i === c.an ? c.an : i)}" alt="${BIOMES[ANIMALS[i].biome].name}">`, ok: i === c.an })), nx, { top: portH(c.an, false), right: `Yes! It lives in ${A.home}.`, wait: 1800 }),
       nx => { const cats = shuffle([...new Set(Object.values(HABCAT))]), k = cats[0], yes = pick(AIDS.filter(i => HABCAT[i] === k)), no = otherAnimals(yes, 2, i => HABCAT[i] !== k); Learn.ask(`Which animal lives in ${HABNAME[k]}?`, shuffle([yes, ...no]).map(i => ({ h: portH(i, false) + `<br>${ANIMALS[i].name}`, ok: i === yes })), nx, { cls: 'big', right: `Yes! The ${ANIMALS[yes].name.toLowerCase()} lives in ${ANIMALS[yes].home}.`, wait: 2000 }); }
     ], end);
   },
@@ -210,7 +210,7 @@ function showGrown(back) {
   UI.on('gx', () => { UI.close(); if (back) back(); });
   const quiz = () => {
     const x = ri(6, 9), y = ri(6, 9), a = x * y, o = new Set([a]); while (o.size < 4) o.add(a + ri(-9, 9) || a + 10);
-    UI.modal(`<h2>👪 FOR GROWN-UPS</h2><p class="lbig">${x} × ${y} = ?</p><div class="lopts">${shuffle([...o]).map(v => `<button class="lopt" data-v="${v}"><b>${v}</b></button>`).join('')}</div><button class="btn sm" id="gx">Back</button>`, { clear: true });
+    UI.modal(`<h2>👪 FOR GROWN-UPS</h2><p class="lbig">${x} × ${y} = ?</p><p class="small">(This page is for grown-ups.)</p><div class="lopts">${shuffle([...o]).map(v => `<button class="lopt" data-v="${v}"><b>${v}</b></button>`).join('')}</div><button class="btn sm" id="gx">Back</button>`, { clear: true });
     $('panel').querySelectorAll('[data-v]').forEach(e => e.onclick = () => { if (+e.dataset.v === a) page(); else { SFX.nope(); UI.close(); if (back) back(); } });
     UI.on('gx', () => { UI.close(); if (back) back(); });
   };
@@ -219,9 +219,9 @@ function showGrown(back) {
     const Z = DB.sanct, homes = Z ? Z.habs.filter(h => h.arrived).length : 0;
     UI.modal(`<h2>👪 ARLO'S PROGRESS</h2><p class="small">Babies rescued: <b>${DB.rescued.length} / ${AIDS.length}</b> · Sanctuary homes: <b>${homes}</b> · Chapters finished: <b>${[1, 2, 3].filter(k => DB.chdone[k]).length} / 3</b> · Coins: <b>${DB.coins}p</b></p>
     <p class="small">⚠ marks a skill that is still wobbly. It comes back in Today's Practice and at some Task Gates until it feels easy. Nothing is ever taken away for a wrong answer.</p><div class="list">${rows}</div>
-    <div class="lbl">SETTINGS</div><button class="btn sm ${DB.set.unlock ? 'sel' : ''}" id="gu">${DB.set.unlock ? '✔' : '☐'} Unlock every chapter</button><button class="btn sm ${DB.set.raid ? 'sel' : ''}" id="gr">${DB.set.raid ? '✔' : '☐'} Sanctuary night raids</button>
+    <div class="lbl">SETTINGS</div><button class="btn sm ${DB.set.unlock ? 'sel' : ''}" id="gu">${DB.set.unlock ? '✔' : '☐'} Unlock every chapter</button>${READ.toggleBtn()}<button class="btn sm ${DB.set.raid ? 'sel' : ''}" id="gr">${DB.set.raid ? '✔' : '☐'} Sanctuary night raids</button>
     <p class="small">Everything is saved only on this device. Nothing is sent anywhere. Use 💾 Backup on the main menu to move a save.</p><button class="btn go" id="gx">DONE</button>`, { wide: true, clear: true });
-    UI.on('gu', () => { DB.set.unlock = !DB.set.unlock; SAVE.put(); page(); }); UI.on('gr', () => { DB.set.raid = !DB.set.raid; SAVE.put(); page(); });
+    UI.on('gu', () => { DB.set.unlock = !DB.set.unlock; SAVE.put(); page(); }); READ.paintToggles(); UI.on('gr', () => { DB.set.raid = !DB.set.raid; SAVE.put(); page(); });
     UI.on('gx', () => { UI.close(); if (back) back(); });
   };
 }

@@ -177,6 +177,9 @@ body.m-sanct #mini{display:block}body.m-sanct #zbox{display:flex}#bLook{display:
 @media(max-width:760px){#mini{width:76px;height:76px;bottom:calc(84px + env(safe-area-inset-bottom,0px))}#zbox{right:88px;bottom:calc(84px + env(safe-area-inset-bottom,0px))}}
 @media(max-height:480px){#mini{width:64px;height:64px;bottom:8px;right:150px}#zbox{right:220px;bottom:8px;flex-direction:row}.uwc{width:auto;height:46vh}.mapc{width:auto;height:50vh}.chap .chi img{width:22px;height:18px}}
 body.m-sanct.fence #mini,body.m-sanct.fence #zbox{opacity:.4;pointer-events:none}
+.armed{outline:4px solid #ffe27a!important;outline-offset:2px;animation:gl .6s infinite alternate;position:relative}
+.lopt.armed::after,.food.armed::after{content:'👆 tap again';position:absolute;left:50%;bottom:-11px;transform:translateX(-50%);background:#ffe27a;color:#222;font:900 10px 'Nunito',sans-serif;padding:1px 6px;border:2px solid #000;white-space:nowrap;text-shadow:none;z-index:2}
+.food{position:relative}.vh{position:absolute!important;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
 </style></head><body class="m-menu">
 <canvas id="c"></canvas>
 <div id="hud">
@@ -1976,7 +1979,7 @@ Object.assign(TASK, {
   habitat(c, end) {
     const A = ANIMALS[c.an], cat = HABCAT[c.an], oth = otherAnimals(c.an, 2, i => HABCAT[i] !== cat && ANIMALS[i].biome !== A.biome);
     Learn.seq([
-      nx => Learn.ask(`Where does the ${A.name.toLowerCase()} live?`, shuffle([c.an, ...oth]).map(i => ({ h: `<img class="pix lscene" src="${Learn.scene(i === c.an ? c.an : i)}" alt="">`, ok: i === c.an })), nx, { top: portH(c.an, false), right: `Yes! It lives in ${A.home}.`, wait: 1800 }),
+      nx => Learn.ask(`Where does the ${A.name.toLowerCase()} live?`, shuffle([c.an, ...oth]).map(i => ({ h: `<img class="pix lscene" src="${Learn.scene(i === c.an ? c.an : i)}" alt="${BIOMES[ANIMALS[i].biome].name}">`, ok: i === c.an })), nx, { top: portH(c.an, false), right: `Yes! It lives in ${A.home}.`, wait: 1800 }),
       nx => { const cats = shuffle([...new Set(Object.values(HABCAT))]), k = cats[0], yes = pick(AIDS.filter(i => HABCAT[i] === k)), no = otherAnimals(yes, 2, i => HABCAT[i] !== k); Learn.ask(`Which animal lives in ${HABNAME[k]}?`, shuffle([yes, ...no]).map(i => ({ h: portH(i, false) + `<br>${ANIMALS[i].name}`, ok: i === yes })), nx, { cls: 'big', right: `Yes! The ${ANIMALS[yes].name.toLowerCase()} lives in ${ANIMALS[yes].home}.`, wait: 2000 }); }
     ], end);
   },
@@ -2083,7 +2086,7 @@ function showGrown(back) {
   UI.on('gx', () => { UI.close(); if (back) back(); });
   const quiz = () => {
     const x = ri(6, 9), y = ri(6, 9), a = x * y, o = new Set([a]); while (o.size < 4) o.add(a + ri(-9, 9) || a + 10);
-    UI.modal(`<h2>👪 FOR GROWN-UPS</h2><p class="lbig">${x} × ${y} = ?</p><div class="lopts">${shuffle([...o]).map(v => `<button class="lopt" data-v="${v}"><b>${v}</b></button>`).join('')}</div><button class="btn sm" id="gx">Back</button>`, { clear: true });
+    UI.modal(`<h2>👪 FOR GROWN-UPS</h2><p class="lbig">${x} × ${y} = ?</p><p class="small">(This page is for grown-ups.)</p><div class="lopts">${shuffle([...o]).map(v => `<button class="lopt" data-v="${v}"><b>${v}</b></button>`).join('')}</div><button class="btn sm" id="gx">Back</button>`, { clear: true });
     $('panel').querySelectorAll('[data-v]').forEach(e => e.onclick = () => { if (+e.dataset.v === a) page(); else { SFX.nope(); UI.close(); if (back) back(); } });
     UI.on('gx', () => { UI.close(); if (back) back(); });
   };
@@ -2092,9 +2095,9 @@ function showGrown(back) {
     const Z = DB.sanct, homes = Z ? Z.habs.filter(h => h.arrived).length : 0;
     UI.modal(`<h2>👪 ARLO'S PROGRESS</h2><p class="small">Babies rescued: <b>${DB.rescued.length} / ${AIDS.length}</b> · Sanctuary homes: <b>${homes}</b> · Chapters finished: <b>${[1, 2, 3].filter(k => DB.chdone[k]).length} / 3</b> · Coins: <b>${DB.coins}p</b></p>
     <p class="small">⚠ marks a skill that is still wobbly. It comes back in Today's Practice and at some Task Gates until it feels easy. Nothing is ever taken away for a wrong answer.</p><div class="list">${rows}</div>
-    <div class="lbl">SETTINGS</div><button class="btn sm ${DB.set.unlock ? 'sel' : ''}" id="gu">${DB.set.unlock ? '✔' : '☐'} Unlock every chapter</button><button class="btn sm ${DB.set.raid ? 'sel' : ''}" id="gr">${DB.set.raid ? '✔' : '☐'} Sanctuary night raids</button>
+    <div class="lbl">SETTINGS</div><button class="btn sm ${DB.set.unlock ? 'sel' : ''}" id="gu">${DB.set.unlock ? '✔' : '☐'} Unlock every chapter</button>${READ.toggleBtn()}<button class="btn sm ${DB.set.raid ? 'sel' : ''}" id="gr">${DB.set.raid ? '✔' : '☐'} Sanctuary night raids</button>
     <p class="small">Everything is saved only on this device. Nothing is sent anywhere. Use 💾 Backup on the main menu to move a save.</p><button class="btn go" id="gx">DONE</button>`, { wide: true, clear: true });
-    UI.on('gu', () => { DB.set.unlock = !DB.set.unlock; SAVE.put(); page(); }); UI.on('gr', () => { DB.set.raid = !DB.set.raid; SAVE.put(); page(); });
+    UI.on('gu', () => { DB.set.unlock = !DB.set.unlock; SAVE.put(); page(); }); READ.paintToggles(); UI.on('gr', () => { DB.set.raid = !DB.set.raid; SAVE.put(); page(); });
     UI.on('gx', () => { UI.close(); if (back) back(); });
   };
 }
@@ -3829,6 +3832,74 @@ showMenu = function () {
   b.onclick = () => { AU.init(); DEVICE.toggleFull(); setTimeout(showMenu, 300); };
   const row = p.querySelector('#m10'); if (row) row.after(b); else p.appendChild(b);
 };
+/* ============ READING HELP: questions read themselves out, and answers are tap-to-hear, tap-again-to-choose ============
+   Auto-read is ON by default. A child who can read (or a grown-up) can switch it off with the 🔊 button in any
+   question panel, on the main menu, or on the Grown-ups page. With auto-read off, answers choose on a single tap. */
+const READ = {
+  on: () => !DB.set || DB.set.read !== false,
+  armed: null, told: 0, hoverT: 0,
+  /* the words to speak for an answer button */
+  label(el) {
+    let t = el.dataset.say || el.getAttribute('aria-label') || el.innerText || '';
+    t = t.replace(/\s+/g, ' ').trim().replace(/(\d+)p\b/g, '$1 pence').replace(/(\d+) − (\d+)/g, '$1 take away $2').replace(/(\d+) \+ (\d+)/g, '$1 add $2').replace(/×/g, 'times');
+    if (!t.replace(/[^\w]/g, '')) { const img = el.querySelector('img[alt]'); t = (img && img.alt) || 'this one'; }
+    return t;
+  },
+  speakLabel(el, confirm) {
+    const t = this.label(el), more = confirm && this.told < 3 ? '. Tap it again to choose it.' : '';
+    if (confirm) this.told++;
+    say(t + more);
+  },
+  disarm() { if (this.armed) this.armed.classList.remove('armed'); this.armed = null; },
+  toggle() { DB.set.read = !this.on(); SAVE.put(); this.disarm(); try { speechSynthesis.cancel(); } catch (e) { } if (this.on()) say('Reading out loud is on.'); this.paintToggles(); },
+  paintToggles() { document.querySelectorAll('.rtog').forEach(b => { b.textContent = this.on() ? '🔊 Reading aloud: ON' : '🔇 Reading aloud: OFF'; b.classList.toggle('sel', this.on()); }); },
+  toggleBtn: () => `<button class="btn sm rtog" type="button">🔊 Reading aloud: ON</button>`
+};
+/* answer buttons that need a second tap to choose (when reading aloud is on) */
+const READ_CONFIRM = '.lopt, #panel .food';
+/* things that just say their name when tapped */
+const READ_SAY = '.ltile, .acell, .lcoin, .chap';
+document.addEventListener('click', e => {
+  const tg = e.target.closest && e.target.closest('.rtog'); if (tg) { e.stopImmediatePropagation(); e.preventDefault(); AU.init(); READ.toggle(); return; }
+  if (!READ.on()) return;
+  const el = e.target.closest && e.target.closest(READ_CONFIRM);
+  if (el && !el.classList.contains('out') && !el.classList.contains('good') && !el.disabled) {
+    if (READ.armed !== el || !document.body.contains(el)) {
+      e.stopImmediatePropagation(); e.preventDefault(); AU.init();
+      READ.disarm(); READ.armed = el; el.classList.add('armed'); AU.tone(880, .05, { type: 'sine', vol: .06 });
+      READ.speakLabel(el, true); return;
+    }
+    READ.disarm(); return;   // second tap on the same answer: let it through to choose it
+  }
+  const s = e.target.closest && e.target.closest(READ_SAY);
+  if (s) { const t = s.classList.contains('ltile') ? s.dataset.ch : READ.label(s); if (t) say(t); }
+}, true);
+/* on a computer, pointing at an answer reads it out */
+document.addEventListener('pointerover', e => {
+  if (e.pointerType !== 'mouse' || !READ.on()) return;
+  const el = e.target.closest && e.target.closest(READ_CONFIRM); if (!el || el === READ.hovered) return;
+  READ.hovered = el; clearTimeout(READ.hoverT); READ.hoverT = setTimeout(() => { if (READ.hovered === el) READ.speakLabel(el, false); }, 350);
+}, true);
+document.addEventListener('pointerout', e => { if (e.pointerType === 'mouse' && e.target.closest && e.target.closest(READ_CONFIRM) === READ.hovered) { READ.hovered = null; clearTimeout(READ.hoverT); } }, true);
+
+/* questions read themselves out */
+const _setQ = Learn.setQ.bind(Learn);
+Learn.setQ = function (html, sayTxt, hintFn) {
+  _setQ(html, sayTxt, hintFn); READ.disarm();
+  if (READ.on() && sayTxt && !this.fast) { clearTimeout(this.readT); this.readT = setTimeout(() => { if (this.cur && this.cur.say === sayTxt) say(sayTxt); }, 250); }
+};
+/* any panel with a "Read to me" button reads itself out, and gets the on/off switch */
+const _modal = UI.modal.bind(UI);
+UI.modal = function (html, o = {}) {
+  _modal(html, o); READ.disarm();
+  const p = $('panel'), sb = p.querySelector('[data-say], #lsay');
+  if (!sb) return;
+  if (!p.querySelector('.rtog')) sb.insertAdjacentHTML('afterend', READ.toggleBtn()); READ.paintToggles();
+  if (READ.on() && sb.dataset.say && !Learn.fast) { const t = sb.dataset.say; setTimeout(() => { if (UI.open && document.body.contains(sb)) say(t); }, 300); }
+};
+/* the switch also lives on the main menu */
+const _showMenuRead = showMenu;
+showMenu = function () { _showMenuRead(); const p = $('panel'), r = p && p.querySelector('#m10'); if (r && !p.querySelector('.rtog')) { r.insertAdjacentHTML('afterend', READ.toggleBtn()); READ.paintToggles(); } };
 /* ============ MAIN: menu, loop, start-up ============ */
 function setMode(m, cls) { if (m !== Sanct && window.ZOOMD) { window.ZOOMD = 0; resize(); } MODE = m; document.body.className = cls; setBar(false); for (const k in K) K[k] = 0; $('srch').classList.remove('glow'); UI.tq.length = 0; UI.tt = 0; $('toast').classList.remove('on'); }
 const Menu = {

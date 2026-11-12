@@ -103,3 +103,12 @@
   - entries in How to Play for both modes
   - a "Go treasure hunting" button in the shop
   - the 💎 total on the menu, the bag and the Sanctuary bar
+
+### Version 4.2: reading help
+- **Questions read themselves out loud.** The question is spoken as soon as it appears, and so is any panel with a "Read to me" button, such as the lost-baby note or the feeding question.
+- **Tap to hear, tap again to choose.** The first tap on an answer reads it out and outlines it in yellow with a "👆 tap again" label. A second tap on the same answer chooses it. Tapping a different answer reads that one instead.
+- **Pointing reads it out** with a mouse on a computer.
+- **Letters, animal cards, coins and chapter buttons** say their name when tapped.
+- **Reading aloud can be switched off** from any question panel, the main menu or the Grown-ups page. With it off, a single tap chooses an answer straight away.
+- **Images get spoken labels.** Answers that are only pictures, such as the habitat scenes, are read out by name.
+- **Install as an app:** a full-screen button on Android and computers, the screen stays awake while playing, and the game works offline once installed.
