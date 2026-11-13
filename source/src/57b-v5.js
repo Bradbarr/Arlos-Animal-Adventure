@@ -172,12 +172,30 @@ const HELP_STEPS = [
   ['💧', 'Water and food', 'Dig a hole and pour water in with the BUCKET, or fill a TROUGH. Put the right food in a FOOD BOWL.'],
   ['🎉', 'Your animal arrives!', 'When every line on the home list has a ✔, the animal moves in. Tap the sign any time to see the list.']
 ];
-Sanct.showHelp = function () {
-  const Z = this.Z; Z.told.help = 1; this.save();
-  const rows = HELP_STEPS.map(([i, h, t], n) => `<div class="step"><b>${n + 1}. ${i} ${h}</b><span>${t}</span></div>`).join('');
-  const txt = 'How to build an animal home. ' + HELP_STEPS.map(([, h, t], n) => `Step ${n + 1}. ${h}. ${t}`).join(' ');
-  UI.modal(`<h2>❓ HOW TO BUILD AN ANIMAL HOME</h2><div class="steps">${rows}</div><p class="small">⚡ Short of things? Tap a sign and use <b>Quick Supplies</b> to buy what is missing with 💎 treasures.</p>${sayBtn(txt)}<button class="btn go" id="hlpok">GOT IT!</button>`, { wide: true });
-  UI.on('hlpok', () => UI.close());
+Sanct.showHelp = function (tab) {
+  const Z = this.Z; Z.told.help = 1; this.save(); tab = tab || (Z.habs.length ? 'q' : 'h');
+  const tabs = `<div class="htabs"><button class="btn sm ${tab === 'q' ? 'on' : ''}" id="htq">📋 QUESTS</button><button class="btn sm ${tab === 'h' ? 'on' : ''}" id="hth">❓ HOW TO BUILD</button></div>`;
+  let body, txt;
+  if (tab === 'h') {
+    body = `<div class="steps">${HELP_STEPS.map(([i, h, t], n) => `<div class="step"><b>${n + 1}. ${i} ${h}</b><span>${t}</span></div>`).join('')}</div><p class="small">⚡ Short of things? Tap a sign and use <b>Quick Supplies</b> to buy what is missing with 💎 treasures.</p>`;
+    txt = 'How to build an animal home. ' + HELP_STEPS.map(([, h, t], n) => `Step ${n + 1}. ${h}. ${t}`).join(' ');
+  } else {
+    Z.habs.forEach(h => this.evalHab(h));
+    const open = Z.habs.filter(h => !h.arrived), built = Z.habs.filter(h => h.arrived).length;
+    const next = AIDS.filter(id => !Z.habs.some(h => h.an === id)), pick = next.find(id => DB.rescued.includes(id)) || next[0];
+    const J = Z.jobs, jobsLeft = !J || !J.done;
+    const q = [];
+    q.push(`<div class="step"><b>🏡 Homes built: ${built} / ${AIDS.length}</b><span>Build a home for every animal on the island.</span></div>`);
+    open.forEach(h => { const A = ANIMALS[h.an], nx = h.ck.list.find(c => !c.ok); q.push(`<div class="step"><b>🚧 Finish ${h.nick ? h.nick + ' the ' : 'the '}${A.name}'s home</b><span>Next: ${nx ? nx.l : 'nearly there!'}</span><div class="hab" style="display:block">${this.ckHtml(h)}</div></div>`); });
+    if (pick) q.push(`<div class="step"><b>🪧 New home: ${ANIMALS[pick].name}</b><span>Plant a sign for the ${ANIMALS[pick].name.toLowerCase()}. It needs: a fence loop with a gate, ${REQ[pick].map(r => r[0] === 'g' || r[0] === 'o' ? `${r[2]} ${r[3].toLowerCase()}` : r[0] === 'w' ? `${r[1]} ${r[2].toLowerCase()}` : r[0] === 'f' ? `${r[1]} in a food bowl` : '').filter(Boolean).join(', ')}.</span></div>`);
+    q.push(`<div class="step"><b>📋 Ranger Jobs ${jobsLeft ? '' : '✔'}</b><span>${jobsLeft ? 'Three quick jobs pinned on the Jobs board. Finish them all for 6p.' : 'All done today. New jobs tomorrow!'}</span>${jobsLeft ? '<button class="btn sm" id="hjb">Do the jobs</button>' : ''}</div>`);
+    q.push(`<div class="step"><b>💎 Treasures: ${DB.gems || 0}</b><span>Find more blue treasures in the landscape levels. Spend them at the Ranger Hut or on Quick Supplies.</span></div>`);
+    body = `<div class="steps">${q.join('')}</div>`;
+    txt = `Your quests. You have built ${built} of ${AIDS.length} homes. ` + open.map(h => { const nx = h.ck.list.find(c => !c.ok); return `The ${ANIMALS[h.an].name} home needs ${nx ? nx.l : 'one more thing'}.`; }).join(' ') + (pick ? ` Next, plant a sign for the ${ANIMALS[pick].name}.` : '');
+  }
+  UI.modal(`<h2>🪧 RANGER HELP BOARD</h2>${tabs}${body}${sayBtn(txt)}<div style="display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin-top:8px"><button class="btn sm" id="hgl">All goals</button><button class="btn go" id="hlpok">GOT IT!</button></div>`, { wide: true });
+  UI.on('htq', () => this.showHelp('q')); UI.on('hth', () => this.showHelp('h')); UI.on('hgl', () => this.showGoals()); UI.on('hlpok', () => UI.close());
+  if ($('hjb')) UI.on('hjb', () => this.showJobs());
 };
 Sanct.placeHelp = function () {
   const old = this.obj.indexOf(O.HELP); if (old >= 0) { const ox = old % this.N, oy = (old / this.N) | 0; if (Math.abs(ox - 64) <= 14 && Math.abs(oy - 49) <= 14) return; this.obj[old] = O.NONE; }
@@ -197,17 +215,26 @@ Sanct.act = function (tx, ty) {
   return _act5(tx, ty);
 };
 const _bag5 = Sanct.showBag && Sanct.showBag.bind(Sanct);
-if (_bag5) Sanct.showBag = function () { _bag5(); const m = $('bmp'); if (m && !$('bhl')) { m.insertAdjacentHTML('afterend', '<button class="btn sm" id="bhl">❓ How to build</button>'); UI.on('bhl', () => this.showHelp()); } };
+if (_bag5) Sanct.showBag = function () { _bag5(); const m = $('bmp'); if (m && !$('bhl')) { m.insertAdjacentHTML('afterend', '<button class="btn sm" id="bhl">🪧 Help Board</button>'); UI.on('bhl', () => this.showHelp()); } };
 const _updTip5 = Sanct.updTip.bind(Sanct);
 Sanct.updTip = function () {
   const Z = this.Z; if (this.helpN !== this.obj) { this.helpN = this.obj; this.placeHelp(); }
-  if (!Z.habs.length) { const t = '❓ New to building? Tap the blue HELP BOARD by the Ranger Station, or open your 🎒 BAG and tap ❓ How to build.'; if ($('tipT').textContent !== t) $('tipT').textContent = t; return; }
+  if (!Z.habs.length) { const t = '❓ New to building? Tap the blue HELP BOARD next to you, or open your 🎒 BAG and tap 🪧 Help Board.'; if ($('tipT').textContent !== t) $('tipT').textContent = t; return; }
   _updTip5();
 };
 /* more generous: two blocks per dig, and a starter pack for everyone */
 const _start5 = Sanct.start.bind(Sanct);
+/* always arrive in the middle of the Sanctuary: by the Food Store, the Ranger Hut and the Help Board, on clear ground */
+Sanct.spawnSpot = function () {
+  const ok = (x, y) => { if (!this.inB(x, y)) return false; const i = this.idx(x, y); return this.gnd[i] !== G.WATER && this.gnd[i] !== G.PIT && this.obj[i] === O.NONE; };
+  const roomy = (x, y) => ok(x, y) && ok(x - 1, y) && ok(x + 1, y) && ok(x, y + 1) && ok(x, y - 1);
+  for (const test of [roomy, ok]) for (let d = 0; d < 16; d++) for (let y = 51 - d; y <= 51 + d; y++) for (let x = 64 - d; x <= 64 + d; x++) if (Math.max(Math.abs(x - 64), Math.abs(y - 51)) === d && test(x, y)) return [x, y];
+  return [64, 51];
+};
 Sanct.start = function () {
   _start5(); const Z = this.Z;
+  this.placeHelp(); this.helpN = this.obj;
+  if (this.a && !this.a.boat) { const [x, y] = this.spawnSpot(); this.a.x = x * TS + 8; this.a.y = y * TS + 12; this.a.tx = null; this.a.dir = 0; Z.px = this.a.x; Z.py = this.a.y; CAM.x = clamp(this.a.x - VW / 2, 0, this.N * TS - VW); CAM.y = clamp(this.a.y - VH / 2, 0, this.N * TS - VH); }
   if (!Z.v5) { Z.v5 = 1; for (const [k, n] of [['wood', 20], ['fence', 12], ['sign', 2], ['bowl', 2]]) Z.inv[k] = (Z.inv[k] || 0) + n; this.hotK = ''; if (Z.habs.length) setTimeout(() => { if (MODE === this) UI.toast('🎁 Starter pack: +20 wood, +12 fences, 2 signs and 2 bowls. And try ⚡ Quick Supplies on any home!', 5000); }, 3000); }
   if (!Z.told.help && !Z.habs.length) setTimeout(() => { if (MODE === this && !UI.open) this.showHelp(); }, 1500);
 };

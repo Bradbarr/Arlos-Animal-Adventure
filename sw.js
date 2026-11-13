@@ -1,6 +1,6 @@
 /* Offline helper: keeps the game working with no internet once it has been opened.
    The game page is fetched fresh when online (so updates arrive), and the saved copy is used when offline. */
-const CACHE = 'arlo-20261113125842';
+const CACHE = 'arlo-20261113143516';
 const CORE = ['./', 'index.html', 'manifest.webmanifest', 'icons/icon-192.png', 'icons/icon-512.png', 'icons/apple-touch-icon.png'];
 self.addEventListener('install', e => { e.waitUntil(caches.open(CACHE).then(c => c.addAll(CORE)).then(() => self.skipWaiting())); });
 self.addEventListener('activate', e => { e.waitUntil(caches.keys().then(ks => Promise.all(ks.filter(k => k !== CACHE).map(k => caches.delete(k)))).then(() => self.clients.claim())); });
