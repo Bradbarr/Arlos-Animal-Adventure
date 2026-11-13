@@ -170,6 +170,9 @@ body.m-sanct.fence #mini,body.m-sanct.fence #zbox{opacity:.4;pointer-events:none
 .armed{outline:4px solid #ffe27a!important;outline-offset:2px;animation:gl .6s infinite alternate;position:relative}
 .lopt.armed::after,.food.armed::after{content:'👆 tap again';position:absolute;left:50%;bottom:-11px;transform:translateX(-50%);background:#ffe27a;color:#222;font:900 10px 'Nunito',sans-serif;padding:1px 6px;border:2px solid #000;white-space:nowrap;text-shadow:none;z-index:2}
 .food{position:relative}.vh{position:absolute!important;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
+#padcur{position:fixed;left:0;top:0;z-index:99999;font-size:34px;line-height:1;pointer-events:none;display:none;filter:drop-shadow(0 2px 0 #000) drop-shadow(0 0 3px #fff)}#padcur.dn{font-size:28px}
+.padf{outline:5px solid #ffd23f!important;outline-offset:3px;box-shadow:0 0 0 9px rgba(0,0,0,.55)!important;position:relative;z-index:2}
+body.pad #ctl{display:none!important}
 .htabs{display:flex;gap:6px;justify-content:center;margin:6px 0}.htabs .on{background:#ffd23f}
 .steps{display:grid;gap:6px;text-align:left;margin:8px 0}.step{background:#e9e2cf;border:3px solid #000;padding:6px 9px;display:flex;flex-direction:column;gap:2px}.step b{font-size:15px}.step span{font-size:14px;line-height:1.35}
 .bday{text-align:center}.bday canvas{width:min(100%,520px,50vh);display:block;margin:0 auto 6px;border:4px solid #000;image-rendering:pixelated}
