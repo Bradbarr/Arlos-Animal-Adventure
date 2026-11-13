@@ -161,13 +161,47 @@ Sanct.showHab = function (h) {
   _showHab5(h); if (!h || h.arrived) return;
   const ok = $('hb'); if (ok && !$('hqs')) { ok.insertAdjacentHTML('beforebegin', `<button class="btn" id="hqs">⚡ Quick supplies (💎)</button><br>`); UI.on('hqs', () => this.quickSupply(h)); }
 };
-/* tips: the first step is always the sign */
+/* the HELP BOARD: a blue notice board by the Ranger Station that explains how to build a home */
+O.HELP = 53; SOLID.add(O.HELP);
+const HELP_STEPS = [
+  ['🪧', 'Plant a sign', 'Open your 🎒 BAG, tap SIGN, then press USE on the ground. Choose the animal who will live there.'],
+  ['🎨', 'Make the sign', 'Paint the animal, spell its name and give it a nickname. Then the sign goes in.'],
+  ['🚧', 'Build a fence', 'Pick the FENCE tool, choose PEN and drag a box around the sign. Every fence loop needs a GATE.'],
+  ['⛏', 'Change the ground', 'Some animals need sand, mud, snow or other ground. Dig blocks with the SHOVEL, then place them inside the fence.'],
+  ['🏠', 'Add a den and plants', 'Make shelters, caves, nest boxes and more in your BAG, then place them inside.'],
+  ['💧', 'Water and food', 'Dig a hole and pour water in with the BUCKET, or fill a TROUGH. Put the right food in a FOOD BOWL.'],
+  ['🎉', 'Your animal arrives!', 'When every line on the home list has a ✔, the animal moves in. Tap the sign any time to see the list.']
+];
+Sanct.showHelp = function () {
+  const Z = this.Z; Z.told.help = 1; this.save();
+  const rows = HELP_STEPS.map(([i, h, t], n) => `<div class="step"><b>${n + 1}. ${i} ${h}</b><span>${t}</span></div>`).join('');
+  const txt = 'How to build an animal home. ' + HELP_STEPS.map(([, h, t], n) => `Step ${n + 1}. ${h}. ${t}`).join(' ');
+  UI.modal(`<h2>❓ HOW TO BUILD AN ANIMAL HOME</h2><div class="steps">${rows}</div><p class="small">⚡ Short of things? Tap a sign and use <b>Quick Supplies</b> to buy what is missing with 💎 treasures.</p>${sayBtn(txt)}<button class="btn go" id="hlpok">GOT IT!</button>`, { wide: true });
+  UI.on('hlpok', () => UI.close());
+};
+Sanct.placeHelp = function () {
+  const old = this.obj.indexOf(O.HELP); if (old >= 0) { const ox = old % this.N, oy = (old / this.N) | 0; if (Math.abs(ox - 64) <= 14 && Math.abs(oy - 49) <= 14) return; this.obj[old] = O.NONE; }
+  const free = (x, y) => { const i = this.idx(x, y); return this.inB(x, y) && this.obj[i] === O.NONE && this.gnd[i] !== G.WATER && this.gnd[i] !== G.PIT && this.zoneAt(x, y) === 'meadow' && !this.Z.habs.some(h => Math.abs(h.x - x) < 2 && Math.abs(h.y - y) < 2); };
+  for (let d = 0; d < 14; d++) for (let y = 49 - d; y <= 49 + d; y++) for (let x = 64 - d; x <= 64 + d; x++) if (free(x, y)) { this.obj[this.idx(x, y)] = O.HELP; return; }
+};
+const _drawObj5 = Sanct.drawObj.bind(Sanct);
+Sanct.drawObj = function (o, x, y, tx, ty, t) {
+  if (o !== O.HELP) return _drawObj5(o, x, y, tx, ty, t);
+  px('#5a4026', x + 2, y + 4, 2, 11); px('#5a4026', x + 12, y + 4, 2, 11); box(x - 1, y - 8, 18, 14, '#3f7fd6'); px('#2a5aa0', x - 1, y + 5, 18, 1);
+  px('#fff', x + 5, y - 6, 6, 2); px('#fff', x + 9, y - 4, 2, 3); px('#fff', x + 7, y - 2, 3, 2); px('#fff', x + 7, y + 1, 2, 2);
+  if (!this.Z.told.help) { const bb = Math.round(Math.sin(t * 6) * 2); px('#ffd23f', x + 13, y - 12 + bb, 4, 4); px('#000', x + 14, y - 11 + bb, 2, 2); }
+};
+const _act5 = Sanct.act.bind(Sanct);
+Sanct.act = function (tx, ty) {
+  if (this.inB(tx, ty) && this.obj[this.idx(tx, ty)] === O.HELP && !(this.a.useT > 0)) { this.a.useT = .3; this.showHelp(); return; }
+  return _act5(tx, ty);
+};
+const _bag5 = Sanct.showBag && Sanct.showBag.bind(Sanct);
+if (_bag5) Sanct.showBag = function () { _bag5(); const m = $('bmp'); if (m && !$('bhl')) { m.insertAdjacentHTML('afterend', '<button class="btn sm" id="bhl">❓ How to build</button>'); UI.on('bhl', () => this.showHelp()); } };
 const _updTip5 = Sanct.updTip.bind(Sanct);
 Sanct.updTip = function () {
-  const Z = this.Z;
-  if (!Z.habs.length && (Z.inv.sign || 0) > 0) { const t = Z.item === 'sign' ? '🪧 STEP 1: Press USE (or tap the ground) to plant your SIGN in the meadow. You will choose an animal and make its sign.' : '🪧 STEP 1: Pick the SIGN in your hotbar, then plant it in the meadow.'; if ($('tipT').textContent !== t) $('tipT').textContent = t; return; }
-  const free = Z.habs.find(h => !h.arrived && h.ck && !h.ck.list[0].ok);
-  if (free && !Z.told.penTip) { const t = `🚧 STEP 2: Build a fence loop around ${free.nick || 'the'} sign. Pick the FENCE tool (6), choose PEN and drag a box around it.`; if ($('tipT').textContent !== t) $('tipT').textContent = t; if (free.ck.list[0].ok) Z.told.penTip = 1; return; }
+  const Z = this.Z; if (this.helpN !== this.obj) { this.helpN = this.obj; this.placeHelp(); }
+  if (!Z.habs.length) { const t = '❓ New to building? Tap the blue HELP BOARD by the Ranger Station, or open your 🎒 BAG and tap ❓ How to build.'; if ($('tipT').textContent !== t) $('tipT').textContent = t; return; }
   _updTip5();
 };
 /* more generous: two blocks per dig, and a starter pack for everyone */
@@ -175,7 +209,7 @@ const _start5 = Sanct.start.bind(Sanct);
 Sanct.start = function () {
   _start5(); const Z = this.Z;
   if (!Z.v5) { Z.v5 = 1; for (const [k, n] of [['wood', 20], ['fence', 12], ['sign', 2], ['bowl', 2]]) Z.inv[k] = (Z.inv[k] || 0) + n; this.hotK = ''; if (Z.habs.length) setTimeout(() => { if (MODE === this) UI.toast('🎁 Starter pack: +20 wood, +12 fences, 2 signs and 2 bowls. And try ⚡ Quick Supplies on any home!', 5000); }, 3000); }
-  if (!Z.habs.length && (Z.inv.sign || 0) > 0) { Z.item = 'sign'; Z.tool = 4; this.hotK = ''; this.buildHotbar(); }
+  if (!Z.told.help && !Z.habs.length) setTimeout(() => { if (MODE === this && !UI.open) this.showHelp(); }, 1500);
 };
 const _gain5 = Sanct.gain.bind(Sanct);
 Sanct.gain = function (k, n, tx, ty) { if (k && k.startsWith('b_') && n === 1) n = 2; return _gain5(k, n, tx, ty); };
